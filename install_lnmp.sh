@@ -2,7 +2,7 @@
 
 yum_libs(){
 echo '----------------------检测依赖包安装状态---------------------------'
-libs='gcc pcre pcre-devel libxml2 libxml2-devel gd gd-devel libaio'
+libs='gcc pcre pcre-devel libxml2 libxml2-devel gd gd-devel libaio '
 installd=0
 for i in $libs;do
    ready_install=$(($ready_install+1))
@@ -97,6 +97,8 @@ cd $basepath/source
 tar xf php-5.6.37.tar.gz
 cd php-5.6.37
 echo 'configure php-fpm'
+echo '清理缓存中...'
+#   make clean all  >dev/null 2>&1
 ./configure  \
 --prefix=/usr/local/php  \
 --with-config-file-path=/usr/local/php \
@@ -111,9 +113,11 @@ echo 'configure php-fpm'
 --with-gd \
 --enable-mysqlnd \
 --with-mysqli=mysqlnd \
+--with-gettext \
 --with-pdo-mysql=mysqlnd  >/dev/null 2>&1
 
 echo "php-fpm make "
+cp -frp /usr/lib64/libldap* /usr/lib/
 make  >/dev/null 2>&1 
 echo "php-fpm make install"
 make install >/dev/null 2>&1
@@ -181,6 +185,7 @@ if [ ! -d "/usr/local/nginx/html/zabbix" ];then
     ipaddr=`ip a |grep inet|grep -v inet6|grep -v 127.0.0.1|awk '{print $2}'|awk -F / '{print "http://"$1"/zabbix"}'`
     echo "zabbix 部署完成,可用以下地址访问:"
     echo $ipaddr
+    echo '默认账号:Admin 密码:zabbix'
 else
     echo '-----zabbix安装目录:/usr/local/nginx/html/zabbix已存在,跳过安装-----'
 fi
